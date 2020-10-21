@@ -50,7 +50,7 @@ class block_class():
 	def is_end(self):
 		return self.color == TURQUOISE
 
-	def reset(self):
+	def is_nothing(self):
 		return self.color == WHITE
 
 		########### modifies status of block #############
@@ -73,11 +73,30 @@ class block_class():
 	def make_path(self):
 		self.color = PURPLE
 
+	def reset(self):
+		self.color = WHITE
+
 	def draw(self, window):
 		pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.width))
 
 	def update_nbrs(self, grid):
-		pass
+		self.nbrs = []
+
+		#check and add nbr DOWN current node
+		if self.row < self.total_rows - 1 and not grid[self.row+1][self.col].is_barrier():
+			self.nbrs.append(grid[self.row+1][self.col])
+
+		#check and add nbr UP current node
+		if self.row < 0 and not grid[self.row-1][self.col].is_barrier():
+			self.nbrs.append(grid[self.row+1][self.col])
+
+		##check and add nbr RIGHT current node
+		if self.col < self.total_rows - 1 and not grid[self.row][self.col+1].is_barrier():
+			self.nbrs.append(grid[self.row][self.col+1])
+
+		#check and add nbr RIGHT current node
+		if self.col < 0 and not grid[self.row][self.col-1].is_barrier():
+			self.nbrs.append(grid[self.row][self.col-1])
 
 	############ compares with other block #############
 
@@ -160,12 +179,12 @@ def main(window, width):
 				block = grid[row][col]
 
 				#check if there's a start position
-				if not start:
+				if not start and block != end:
 					start = block
 					start.make_start()
 
 				#checks if there's an end position
-				elif not end:
+				elif not end and block != start:
 					end = block
 					end.make_end()
 
@@ -174,7 +193,20 @@ def main(window, width):
 
 			#checks for right-click
 			elif pygame.mouse.get_pressed()[2]:
-				pass
+				pos = pygame.mouse.get_pos()
+				row, col = get_clicked_pos(pos, ROWS, width)
+				block = grid[row][col]
+				block.reset()
+
+				if block == start:
+					start = None
+
+				elif block == end:
+					end = None
+
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_SPACE and not started:
+					pass 
 
 
 	pygame.quit()
