@@ -1,10 +1,11 @@
 import pygame
 
+#make window
 WIDTH = 800
 WIN = pygame.display.set_mode((WIDTH, WIDTH))
 pygame.display.set_caption("Path Finding Visualzier")
 
-
+#global variables - colors
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 255, 0)
@@ -16,7 +17,9 @@ ORANGE = (255, 165 ,0)
 GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
 
-class spot_class():
+#close for each block
+class block_class():
+	#Initialization
 	def __init__(self, row, col, width, total_rows):
 		self.row = row
 		self.col = col
@@ -27,7 +30,7 @@ class spot_class():
 		self.width = width
 		self.total_rows = total_rows
 
-		############ checks ##############
+		############ checks the status of the block ##############
 
 	def get_pos(self):
 		return self.row, self.col
@@ -50,7 +53,7 @@ class spot_class():
 	def reset(self):
 		return self.color == WHITE
 
-		########### Makes #############
+		########### modifies status of block #############
 	
 	def make_closed(self):
 		 self.color = RED
@@ -76,27 +79,29 @@ class spot_class():
 	def update_nbrs(self, grid):
 		pass
 
+	############ compares with other block #############
+
 	def __lt__(self, other):
 		return False
 
+#finds distance between two points
 def h(p1, p2):
 	x1, y1 = p1
 	x2, y2 = p2
 	distance = abs(x1-x2) + abs(y1-y2)
 	return distance
 
+#makes the grid in the form of a 2-D list
 def make_grid(rows, width):
 	gap = width//rows
 	grid = []
 	for i in range(0, rows):
 		grid.append([])
 		for j in range(0, rows):
-			spot = spot_class(i, j, gap, rows)
+			spot = block_class(i, j, gap, rows)
 			grid[i].append(spot)
 
 	return grid
-
-
 
 
 
