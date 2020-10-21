@@ -104,13 +104,22 @@ def make_grid(rows, width):
 	return grid
 
 #draw grid on window
-def draw_grid(win, rows, width):
+def draw_grid(window, rows, width):
 	gap = width//rows
 	for i in range(0, rows):
-		pygame.draw.line(win, GREY (0, i*gap), (width, i*gap))
+		pygame.draw.line(window, GREY (0, i*gap), (width, i*gap))
 		for j in range(0, rows):
-			pygame.draw.line(win, GREY (j*gap, 9), (j*gap, width))
+			pygame.draw.line(window, GREY (j*gap, 9), (j*gap, width))
 
+#draw everything
+def draw(window, grid, rows, width):
+	window.fill(WHITE)
 
+	for row in grid:
+		for block in row:
+			block.draw(window)
+
+	draw_grid(window, rows, width)
+	pygame.display.update()
 
 
