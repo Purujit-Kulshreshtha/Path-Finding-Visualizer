@@ -8,13 +8,13 @@ WINDOW = pygame.display.set_mode((WIDTH, WIDTH))
 pygame.display.set_caption("Path Finding Visualzier")
 
 #global variables - colors
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
+RED = (11, 79, 108)
+GREEN = (1, 186, 239)
 BLUE = (0, 255, 0)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-PURPLE = (128, 0, 128)
+PURPLE = (32, 191, 85)
 ORANGE = (255, 165 ,0)
 GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
@@ -212,7 +212,7 @@ def get_clicked_pos(pos, rows, width):
 #mainloop for window
 def main(window, width):
 	#variables
-	ROWS = 20
+	ROWS = 2000
 	grid = make_grid(ROWS, width)
 
 	start = None
@@ -227,9 +227,6 @@ def main(window, width):
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				run = False
-
-			if started:
-				continue
 
 			#checks for left-click
 			if pygame.mouse.get_pressed()[0]:
@@ -264,13 +261,13 @@ def main(window, width):
 					end = None
 
 			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_SPACE and not started:
+				if event.key == pygame.K_SPACE and start and end:
 					for row in grid:
 						for block in row:
 							block.update_nbrs(grid)
 					path_finder_algo(lambda: draw(window, grid, ROWS, width), grid, start, end)
 
-				if event.type == pygame.K_c:
+				if event.key == pygame.K_c:
 					start = None
 					end = None
 					grid = make_grid(ROWS, width)
