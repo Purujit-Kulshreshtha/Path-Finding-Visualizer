@@ -3,7 +3,7 @@ from queue import PriorityQueue
 import math
 
 #make window
-WIDTH = 500
+WIDTH = 700
 WINDOW = pygame.display.set_mode((WIDTH, WIDTH))
 pygame.display.set_caption("Path Finding Visualzier")
 
@@ -16,7 +16,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 PURPLE = (32, 191, 85)
 ORANGE = (255, 165 ,0)
-GREY = (128, 128, 128)
+GREY = (200, 200, 200)
 TURQUOISE = (64, 224, 208)
 
 #close for each block
@@ -176,8 +176,10 @@ def make_grid(rows, width):
 	for i in range(0, rows):
 		grid.append([])
 		for j in range(0, rows):
-			spot = block_class(i, j, gap, rows)
-			grid[i].append(spot)
+			block = block_class(i, j, gap, rows)
+			if i == 0 or j == 0 or i == rows-1 or j == rows-1:
+				block.color = BLACK
+			grid[i].append(block)
 
 	return grid
 
@@ -212,7 +214,7 @@ def get_clicked_pos(pos, rows, width):
 #mainloop for window
 def main(window, width):
 	#variables
-	ROWS = 2000
+	ROWS = 50
 	grid = make_grid(ROWS, width)
 
 	start = None
