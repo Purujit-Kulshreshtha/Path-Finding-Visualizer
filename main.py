@@ -1,7 +1,9 @@
 import pygame
+from queue import PriorityQueue
+import math
 
 #make window
-WIDTH = 800
+WIDTH = 500
 WINDOW = pygame.display.set_mode((WIDTH, WIDTH))
 pygame.display.set_caption("Path Finding Visualzier")
 
@@ -83,19 +85,19 @@ class block_class():
 		self.nbrs = []
 
 		#check and add nbr DOWN current node
-		if self.row < self.total_rows - 1 and not grid[self.row+1][self.col].is_barrier():
+		if self.row < self.total_rows - 1 and not grid[self.row+1][self.col].is_bar():
 			self.nbrs.append(grid[self.row+1][self.col])
 
 		#check and add nbr UP current node
-		if self.row < 0 and not grid[self.row-1][self.col].is_barrier():
-			self.nbrs.append(grid[self.row+1][self.col])
+		if self.row > 0 and not grid[self.row-1][self.col].is_bar():
+			self.nbrs.append(grid[self.row-1][self.col])
 
 		##check and add nbr RIGHT current node
-		if self.col < self.total_rows - 1 and not grid[self.row][self.col+1].is_barrier():
+		if self.col < self.total_rows - 1 and not grid[self.row][self.col+1].is_bar():
 			self.nbrs.append(grid[self.row][self.col+1])
 
 		#check and add nbr RIGHT current node
-		if self.col < 0 and not grid[self.row][self.col-1].is_barrier():
+		if self.col > 0 and not grid[self.row][self.col-1].is_bar():
 			self.nbrs.append(grid[self.row][self.col-1])
 
 	############ compares with other block #############
@@ -109,6 +111,63 @@ def h(p1, p2):
 	x2, y2 = p2
 	distance = abs(x1-x2) + abs(y1-y2)
 	return distance
+
+#tracing path
+def draw_found_path(came_from, current, draw):
+	while current in came_from:
+		current = came_from[current]
+		current.make_path()
+		draw()
+
+
+#main path finding algorith
+def path_finder_algo(draw, grid, start, end):
+	count = 0
+	open_set = PriorityQueue()
+	open_set.put((0, count, start))
+	came_from = {}
+
+	g_score = {block: float("inf") for row in grid for block in row}
+	g_score[start] = 0
+
+	f_score = {block: float("inf") for row in grid for block in row}
+	f_score[start] = h(start.get_pos(), end.get_pos())
+
+	open_set_dict = {start}
+
+	while not open_set.empty():
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+
+		current = open_set.get()[2]
+		open_set_dict.remove(current)
+
+		if current == end:
+			draw_found_path(came_from, end, draw)
+			end.make_end()
+			return True
+
+		for nbr in current.nbrs:
+			temp_g_score = g_score[current] + 1
+
+			if temp_g_score < g_score[nbr]:
+				came_from[nbr] = current
+				g_score[nbr] = temp_g_score
+				f_score[nbr] = temp_g_score + h(nbr.get_pos(), end.get_pos())
+
+				if nbr not in open_set_dict:
+					count += 1
+					open_set.put((f_score[nbr], count, nbr))
+					open_set_dict.add(nbr)
+					nbr.make_open()
+
+		draw()
+
+		if current != start:
+			current.make_closed()
+
+	return False
 
 #makes the grid in the form of a 2-D list
 def make_grid(rows, width):
@@ -153,7 +212,7 @@ def get_clicked_pos(pos, rows, width):
 #mainloop for window
 def main(window, width):
 	#variables
-	ROWS = 50
+	ROWS = 20
 	grid = make_grid(ROWS, width)
 
 	start = None
@@ -206,7 +265,15 @@ def main(window, width):
 
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_SPACE and not started:
-					pass 
+					for row in grid:
+						for block in row:
+							block.update_nbrs(grid)
+					path_finder_algo(lambda: draw(window, grid, ROWS, width), grid, start, end)
+
+				if event.type == pygame.K_c:
+					start = None
+					end = None
+					grid = make_grid(ROWS, width)
 
 
 	pygame.quit()
