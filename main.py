@@ -85,6 +85,17 @@ def h(p1, p2):
 	distance = abs(x1-x2) + abs(y1-y2)
 	return distance
 
+def make_grid(rows, width):
+	gap = width//rows
+	grid = []
+	for i in range(0, rows):
+		grid.append([])
+		for j in range(0, rows):
+			spot = spot_class(i, j, gap, rows)
+			grid[i].append(spot)
+
+	return grid
+
 
 
 
