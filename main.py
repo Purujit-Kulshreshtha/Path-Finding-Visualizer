@@ -2,7 +2,7 @@ import pygame
 
 #make window
 WIDTH = 800
-WIN = pygame.display.set_mode((WIDTH, WIDTH))
+WINDOW = pygame.display.set_mode((WIDTH, WIDTH))
 pygame.display.set_caption("Path Finding Visualzier")
 
 #global variables - colors
@@ -107,9 +107,9 @@ def make_grid(rows, width):
 def draw_grid(window, rows, width):
 	gap = width//rows
 	for i in range(0, rows):
-		pygame.draw.line(window, GREY (0, i*gap), (width, i*gap))
+		pygame.draw.line(window, GREY, (0, i*gap), (width, i*gap))
 		for j in range(0, rows):
-			pygame.draw.line(window, GREY (j*gap, 9), (j*gap, width))
+			pygame.draw.line(window, GREY, (j*gap, 9), (j*gap, width))
 
 #draw everything
 def draw(window, grid, rows, width):
@@ -122,4 +122,62 @@ def draw(window, grid, rows, width):
 	draw_grid(window, rows, width)
 	pygame.display.update()
 
+#getting the mouse position
+def get_clicked_pos(pos, rows, width):
+	gap = width//rows
+	y, x = pos
+	row = y//gap
+	col = x//gap
 
+	return row, col
+
+#mainloop for window
+def main(window, width):
+	#variables
+	ROWS = 50
+	grid = make_grid(ROWS, width)
+
+	start = None
+	end = None
+
+	run = True
+	started = False
+
+	#mainloop
+	while run:
+		draw(window, grid, ROWS, width)
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				run = False
+
+			if started:
+				continue
+
+			#checks for left-click
+			if pygame.mouse.get_pressed()[0]:
+				pos = pygame.mouse.get_pos()
+				row, col = get_clicked_pos(pos, ROWS, width)
+				block = grid[row][col]
+
+				#check if there's a start position
+				if not start:
+					start = block
+					start.make_start()
+
+				#checks if there's an end position
+				elif not end:
+					end = block
+					end.make_end()
+
+				elif block != start and block != end:
+					block.make_bar()
+
+			#checks for right-click
+			elif pygame.mouse.get_pressed()[2]:
+				pass
+
+
+	pygame.quit()
+
+
+main(WINDOW, WIDTH)
